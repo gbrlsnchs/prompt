@@ -3,9 +3,9 @@ workflows:
   version: 2
   test:
     jobs:
-      - go1.12
-      - go1.11
       - go1.10
+      - go1.11
+      - go1.12
 jobs:
   go1.12: &template
     docker:
