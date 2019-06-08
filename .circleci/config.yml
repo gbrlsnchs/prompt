@@ -13,9 +13,9 @@ jobs:
     steps:
       - checkout
       - run:
-        command: |
-          make
-          make test
+          command: |
+            make
+            make test
   go1.11:
     <<: *template
     docker:
