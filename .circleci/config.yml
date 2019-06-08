@@ -1,0 +1,26 @@
+version: 2
+workflows:
+  version: 2
+  test:
+    jobs:
+      - go1.12
+      - go1.11
+      - go1.10
+jobs:
+  go1.12: &template
+    docker:
+      - image: circleci/golang:1.12-alpine
+    steps:
+      - checkout
+      - run:
+        - make
+        - make test
+  go1.11:
+    <<: *template
+    docker:
+      - image: circleci/golang:1.11-alpine
+  go1.10:
+    <<: *template
+    docker:
+      - image: circleci/golang:1.10-alpine
+    working_directory: /go/src/github.com/gbrlsnchs/prompt
