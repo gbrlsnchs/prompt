@@ -52,6 +52,11 @@ func (p *Prompt) SetDecline(a ...string) {
 	}
 }
 
+// Confirm prompts a message and check whether the input is acceptable.
+func (p *Prompt) Confirm(msg string) bool {
+	return p.ConfirmStatus(msg) == StatusAccept
+}
+
 // ConfirmStatus prompts a message and returns a status depending on input.
 func (p *Prompt) ConfirmStatus(msg string) Status {
 	fmt.Fprint(p.w, msg)
