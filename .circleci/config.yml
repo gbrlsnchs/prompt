@@ -9,7 +9,7 @@ workflows:
 jobs:
   go1.12: &template
     docker:
-      - image: circleci/golang:1.12-alpine
+      - image: circleci/golang:1.12
     steps:
       - checkout
       - run:
@@ -19,9 +19,9 @@ jobs:
   go1.11:
     <<: *template
     docker:
-      - image: circleci/golang:1.11-alpine
+      - image: circleci/golang:1.11
   go1.10:
     <<: *template
     docker:
-      - image: circleci/golang:1.10-alpine
+      - image: circleci/golang:1.10
     working_directory: /go/src/github.com/gbrlsnchs/prompt
