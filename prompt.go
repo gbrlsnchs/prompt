@@ -2,7 +2,6 @@ package prompt
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"strings"
 )
@@ -38,6 +37,26 @@ func New(r io.Reader, w io.Writer) *Prompt {
 	}
 }
 
+// Confirm prompts a message and check whether the input is acceptable.
+func (p *Prompt) Confirm() bool {
+	return p.ConfirmStatus() == StatusAccept
+}
+
+// ConfirmStatus prompts a message and returns a status depending on input.
+func (p *Prompt) ConfirmStatus() Status {
+	var input string
+	p.sc.Scan()
+	input = strings.TrimSpace(p.sc.Text())
+	input = strings.ToLower(input)
+	if _, ok := p.want[input]; ok {
+		return StatusAccept
+	}
+	if _, ok := p.deny[input]; ok {
+		return StatusDecline
+	}
+	return StatusNone
+}
+
 // SetAccept sets all accepted answers.
 func (p *Prompt) SetAccept(a ...string) {
 	for _, aa := range a {
@@ -50,25 +69,4 @@ func (p *Prompt) SetDecline(a ...string) {
 	for _, aa := range a {
 		p.deny[aa] = struct{}{}
 	}
-}
-
-// Confirm prompts a message and check whether the input is acceptable.
-func (p *Prompt) Confirm(msg string) bool {
-	return p.ConfirmStatus(msg) == StatusAccept
-}
-
-// ConfirmStatus prompts a message and returns a status depending on input.
-func (p *Prompt) ConfirmStatus(msg string) Status {
-	fmt.Fprint(p.w, msg)
-	var input string
-	p.sc.Scan()
-	input = strings.TrimSpace(p.sc.Text())
-	input = strings.ToLower(input)
-	if _, ok := p.want[input]; ok {
-		return StatusAccept
-	}
-	if _, ok := p.deny[input]; ok {
-		return StatusDecline
-	}
-	return StatusNone
 }

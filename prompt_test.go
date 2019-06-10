@@ -14,7 +14,6 @@ func TestPromptConfirm(t *testing.T) {
 		accept  []string
 		decline []string
 
-		msg  string
 		want bool
 	}{
 		// default "y"
@@ -22,7 +21,6 @@ func TestPromptConfirm(t *testing.T) {
 			r:       strings.NewReader("y\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Confirm? [y(es)/n(o)] ",
 			want:    true,
 		},
 		// default "n"
@@ -30,7 +28,6 @@ func TestPromptConfirm(t *testing.T) {
 			r:       strings.NewReader("n\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Are you sure? [y(es)/n(o)] ",
 			want:    false,
 		},
 		// capital "y"
@@ -38,7 +35,6 @@ func TestPromptConfirm(t *testing.T) {
 			r:       strings.NewReader("Y\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Is that right? [y(es)/n(o)] ",
 			want:    true,
 		},
 		// capital "n"
@@ -46,7 +42,6 @@ func TestPromptConfirm(t *testing.T) {
 			r:       strings.NewReader("N\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Accept all? [y(es)/n(o)] ",
 			want:    false,
 		},
 		// default "yes"
@@ -54,7 +49,6 @@ func TestPromptConfirm(t *testing.T) {
 			r:       strings.NewReader("yes\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Confirm? [y(es)/n(o)] ",
 			want:    true,
 		},
 		// default "no"
@@ -62,7 +56,6 @@ func TestPromptConfirm(t *testing.T) {
 			r:       strings.NewReader("no\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Are you sure? [y(es)/n(o)] ",
 			want:    false,
 		},
 		// capital "yes"
@@ -70,7 +63,6 @@ func TestPromptConfirm(t *testing.T) {
 			r:       strings.NewReader("YES\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Is that right? [y(es)/n(o)] ",
 			want:    true,
 		},
 		// capital "no"
@@ -78,7 +70,6 @@ func TestPromptConfirm(t *testing.T) {
 			r:       strings.NewReader("NO\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Accept all? [y(es)/n(o)] ",
 			want:    false,
 		},
 		// default whitespaced "yes"
@@ -86,7 +77,6 @@ func TestPromptConfirm(t *testing.T) {
 			r:       strings.NewReader("  yes  \n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Confirm? [y(es)/n(o)] ",
 			want:    true,
 		},
 		// default whitespaced "no"
@@ -94,7 +84,6 @@ func TestPromptConfirm(t *testing.T) {
 			r:       strings.NewReader("  no  \n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Are you sure? [y(es)/n(o)] ",
 			want:    false,
 		},
 		// capital whitespaced "yes"
@@ -102,7 +91,6 @@ func TestPromptConfirm(t *testing.T) {
 			r:       strings.NewReader("  YES  \n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Is that right? [y(es)/n(o)] ",
 			want:    true,
 		},
 		// capital whitespaced "no"
@@ -110,7 +98,6 @@ func TestPromptConfirm(t *testing.T) {
 			r:       strings.NewReader("  NO  \n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Accept all? [y(es)/n(o)] ",
 			want:    false,
 		},
 		// none
@@ -118,7 +105,6 @@ func TestPromptConfirm(t *testing.T) {
 			r:       strings.NewReader("foo\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Please answer yes or no: ",
 			want:    false,
 		},
 	}
@@ -129,11 +115,8 @@ func TestPromptConfirm(t *testing.T) {
 			p := prompt.New(tc.r, &stdin)
 			p.SetAccept(tc.accept...)
 			p.SetDecline(tc.decline...)
-			if want, got := tc.want, p.Confirm(tc.msg); want != got {
+			if want, got := tc.want, p.Confirm(); want != got {
 				t.Errorf("want %t, got %t", want, got)
-			}
-			if want, got := tc.msg, stdin.String(); want != got {
-				t.Errorf("want %q, got %q", want, got)
 			}
 		})
 	}
@@ -145,7 +128,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 		accept  []string
 		decline []string
 
-		msg  string
 		want prompt.Status
 	}{
 		// default "y"
@@ -153,7 +135,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 			r:       strings.NewReader("y\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Confirm? [y(es)/n(o)] ",
 			want:    prompt.StatusAccept,
 		},
 		// default "n"
@@ -161,7 +142,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 			r:       strings.NewReader("n\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Are you sure? [y(es)/n(o)] ",
 			want:    prompt.StatusDecline,
 		},
 		// capital "y"
@@ -169,7 +149,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 			r:       strings.NewReader("Y\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Is that right? [y(es)/n(o)] ",
 			want:    prompt.StatusAccept,
 		},
 		// capital "n"
@@ -177,7 +156,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 			r:       strings.NewReader("N\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Accept all? [y(es)/n(o)] ",
 			want:    prompt.StatusDecline,
 		},
 		// default "yes"
@@ -185,7 +163,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 			r:       strings.NewReader("yes\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Confirm? [y(es)/n(o)] ",
 			want:    prompt.StatusAccept,
 		},
 		// default "no"
@@ -193,7 +170,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 			r:       strings.NewReader("no\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Are you sure? [y(es)/n(o)] ",
 			want:    prompt.StatusDecline,
 		},
 		// capital "yes"
@@ -201,7 +177,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 			r:       strings.NewReader("YES\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Is that right? [y(es)/n(o)] ",
 			want:    prompt.StatusAccept,
 		},
 		// capital "no"
@@ -209,7 +184,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 			r:       strings.NewReader("NO\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Accept all? [y(es)/n(o)] ",
 			want:    prompt.StatusDecline,
 		},
 		// default whitespaced "yes"
@@ -217,7 +191,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 			r:       strings.NewReader("  yes  \n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Confirm? [y(es)/n(o)] ",
 			want:    prompt.StatusAccept,
 		},
 		// default whitespaced "no"
@@ -225,7 +198,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 			r:       strings.NewReader("  no  \n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Are you sure? [y(es)/n(o)] ",
 			want:    prompt.StatusDecline,
 		},
 		// capital whitespaced "yes"
@@ -233,7 +205,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 			r:       strings.NewReader("  YES  \n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Is that right? [y(es)/n(o)] ",
 			want:    prompt.StatusAccept,
 		},
 		// capital whitespaced "no"
@@ -241,7 +212,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 			r:       strings.NewReader("  NO  \n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Accept all? [y(es)/n(o)] ",
 			want:    prompt.StatusDecline,
 		},
 		// none
@@ -249,7 +219,6 @@ func TestPromptConfirmStatus(t *testing.T) {
 			r:       strings.NewReader("foo\n"),
 			accept:  []string{"y", "yes"},
 			decline: []string{"n", "no"},
-			msg:     "Please answer yes or no: ",
 			want:    prompt.StatusNone,
 		},
 	}
@@ -260,11 +229,8 @@ func TestPromptConfirmStatus(t *testing.T) {
 			p := prompt.New(tc.r, &stdin)
 			p.SetAccept(tc.accept...)
 			p.SetDecline(tc.decline...)
-			if want, got := tc.want, p.ConfirmStatus(tc.msg); want != got {
+			if want, got := tc.want, p.ConfirmStatus(); want != got {
 				t.Errorf("want %d, got %d", want, got)
-			}
-			if want, got := tc.msg, stdin.String(); want != got {
-				t.Errorf("want %q, got %q", want, got)
 			}
 		})
 	}
