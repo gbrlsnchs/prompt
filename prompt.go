@@ -4,8 +4,6 @@ import (
 	"bufio"
 	"io"
 	"os"
-	"strings"
-)
 )
 
 // Prompt is a text prompter.
@@ -28,10 +26,8 @@ func (p *Prompt) Confirm(inputs map[string]bool) bool {
 
 // ConfirmStatus prompts a message and returns a status depending on input.
 func (p *Prompt) ConfirmStatus(inputs map[string]bool) Status {
-	var input string
 	p.sc.Scan()
-	input = strings.TrimSpace(p.sc.Text())
-	input = strings.ToLower(input)
+	input := Transform(p.sc.Text())
 	confirm, ok := inputs[input]
 	if !ok {
 		return StatusNone
