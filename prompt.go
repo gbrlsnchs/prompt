@@ -11,7 +11,7 @@ type Prompt struct {
 	sc *bufio.Scanner
 }
 
-// New initializes a new prompt with proper writer and reader.
+// New initializes a new prompt using r. If r is nil, os.Stdin is used.
 func New(r io.Reader) *Prompt {
 	if r == nil {
 		r = os.Stdin
