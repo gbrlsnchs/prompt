@@ -28,9 +28,8 @@ func (p *Prompt) Confirm(inputs map[string]bool) bool {
 // ConfirmStatus prompts a message and returns a status depending on input.
 // The input is transformed using the Transform function.
 func (p *Prompt) ConfirmStatus(inputs map[string]bool) Status {
-	p.sc.Scan()
-	in := Transform(p.sc.Text())
-	confirm, ok := inputs[in]
+	in := p.Response()
+	confirm, ok := inputs[Transform(in)]
 	if !ok {
 		return StatusNone
 	}
@@ -38,4 +37,10 @@ func (p *Prompt) ConfirmStatus(inputs map[string]bool) Status {
 		return StatusAccept
 	}
 	return StatusDecline
+}
+
+// Response scans an input and returns it as it is.
+func (p *Prompt) Response() string {
+	p.sc.Scan()
+	return p.sc.Text()
 }

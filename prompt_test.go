@@ -204,3 +204,21 @@ func TestPromptConfirmStatus(t *testing.T) {
 		})
 	}
 }
+
+func TestPromptResponse(t *testing.T) {
+	testCases := []struct {
+		r    io.Reader
+		want string
+	}{
+		{strings.NewReader("test\n"), "test"},
+		{strings.NewReader("FooBar\n"), "FooBar"},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.want, func(t *testing.T) {
+			p := prompt.New(tc.r)
+			if want, got := tc.want, p.Response(); want != got {
+				t.Errorf("want %q, got %q", want, got)
+			}
+		})
+	}
+}
