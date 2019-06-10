@@ -27,8 +27,8 @@ func (p *Prompt) Confirm(inputs map[string]bool) bool {
 // ConfirmStatus prompts a message and returns a status depending on input.
 func (p *Prompt) ConfirmStatus(inputs map[string]bool) Status {
 	p.sc.Scan()
-	input := Transform(p.sc.Text())
-	confirm, ok := inputs[input]
+	in := Transform(p.sc.Text())
+	confirm, ok := inputs[in]
 	if !ok {
 		return StatusNone
 	}
