@@ -3,6 +3,7 @@ package prompt
 import (
 	"bufio"
 	"io"
+	"os"
 	"strings"
 )
 
@@ -20,53 +21,34 @@ const (
 
 // Prompt is a text prompter.
 type Prompt struct {
-	want map[string]struct{}
-	deny map[string]struct{}
-
 	sc *bufio.Scanner
-	w  io.Writer
 }
 
 // New initializes a new prompt with proper writer and reader.
-func New(r io.Reader, w io.Writer) *Prompt {
-	return &Prompt{
-		want: make(map[string]struct{}),
-		deny: make(map[string]struct{}),
-		sc:   bufio.NewScanner(r),
-		w:    w,
+func New(r io.Reader) *Prompt {
+	if r == nil {
+		r = os.Stdin
 	}
+	return &Prompt{sc: bufio.NewScanner(r)}
 }
 
 // Confirm prompts a message and check whether the input is acceptable.
-func (p *Prompt) Confirm() bool {
-	return p.ConfirmStatus() == StatusAccept
+func (p *Prompt) Confirm(inputs map[string]bool) bool {
+	return p.ConfirmStatus(inputs) == StatusAccept
 }
 
 // ConfirmStatus prompts a message and returns a status depending on input.
-func (p *Prompt) ConfirmStatus() Status {
+func (p *Prompt) ConfirmStatus(inputs map[string]bool) Status {
 	var input string
 	p.sc.Scan()
 	input = strings.TrimSpace(p.sc.Text())
 	input = strings.ToLower(input)
-	if _, ok := p.want[input]; ok {
+	confirm, ok := inputs[input]
+	if !ok {
+		return StatusNone
+	}
+	if confirm {
 		return StatusAccept
 	}
-	if _, ok := p.deny[input]; ok {
-		return StatusDecline
-	}
-	return StatusNone
-}
-
-// SetAccept sets all accepted answers.
-func (p *Prompt) SetAccept(a ...string) {
-	for _, aa := range a {
-		p.want[aa] = struct{}{}
-	}
-}
-
-// SetDecline sets all declining answers.
-func (p *Prompt) SetDecline(a ...string) {
-	for _, aa := range a {
-		p.deny[aa] = struct{}{}
-	}
+	return StatusDecline
 }

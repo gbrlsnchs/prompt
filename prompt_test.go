@@ -8,114 +8,102 @@ import (
 	"github.com/gbrlsnchs/prompt"
 )
 
+var testInputs = map[string]bool{
+	"y":   true,
+	"yes": true,
+	"n":   false,
+	"no":  false,
+}
+
 func TestPromptConfirm(t *testing.T) {
 	testCases := []struct {
-		r       io.Reader
-		accept  []string
-		decline []string
-
-		want bool
+		r      io.Reader
+		inputs map[string]bool
+		want   bool
 	}{
 		// default "y"
 		{
-			r:       strings.NewReader("y\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    true,
+			r:      strings.NewReader("y\n"),
+			inputs: testInputs,
+			want:   true,
 		},
 		// default "n"
 		{
-			r:       strings.NewReader("n\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    false,
+			r:      strings.NewReader("n\n"),
+			inputs: testInputs,
+			want:   false,
 		},
 		// capital "y"
 		{
-			r:       strings.NewReader("Y\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    true,
+			r:      strings.NewReader("Y\n"),
+			inputs: testInputs,
+			want:   true,
 		},
 		// capital "n"
 		{
-			r:       strings.NewReader("N\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    false,
+			r:      strings.NewReader("N\n"),
+			inputs: testInputs,
+			want:   false,
 		},
 		// default "yes"
 		{
-			r:       strings.NewReader("yes\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    true,
+			r:      strings.NewReader("yes\n"),
+			inputs: testInputs,
+			want:   true,
 		},
 		// default "no"
 		{
-			r:       strings.NewReader("no\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    false,
+			r:      strings.NewReader("no\n"),
+			inputs: testInputs,
+			want:   false,
 		},
 		// capital "yes"
 		{
-			r:       strings.NewReader("YES\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    true,
+			r:      strings.NewReader("YES\n"),
+			inputs: testInputs,
+			want:   true,
 		},
 		// capital "no"
 		{
-			r:       strings.NewReader("NO\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    false,
+			r:      strings.NewReader("NO\n"),
+			inputs: testInputs,
+			want:   false,
 		},
 		// default whitespaced "yes"
 		{
-			r:       strings.NewReader("  yes  \n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    true,
+			r:      strings.NewReader("  yes  \n"),
+			inputs: testInputs,
+			want:   true,
 		},
 		// default whitespaced "no"
 		{
-			r:       strings.NewReader("  no  \n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    false,
+			r:      strings.NewReader("  no  \n"),
+			inputs: testInputs,
+			want:   false,
 		},
 		// capital whitespaced "yes"
 		{
-			r:       strings.NewReader("  YES  \n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    true,
+			r:      strings.NewReader("  YES  \n"),
+			inputs: testInputs,
+			want:   true,
 		},
 		// capital whitespaced "no"
 		{
-			r:       strings.NewReader("  NO  \n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    false,
+			r:      strings.NewReader("  NO  \n"),
+			inputs: testInputs,
+			want:   false,
 		},
 		// none
 		{
-			r:       strings.NewReader("foo\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    false,
+			r:      strings.NewReader("foo\n"),
+			inputs: testInputs,
+			want:   false,
 		},
 	}
-	var stdin strings.Builder
 	for _, tc := range testCases {
 		t.Run("", func(t *testing.T) {
-			stdin.Reset()
-			p := prompt.New(tc.r, &stdin)
-			p.SetAccept(tc.accept...)
-			p.SetDecline(tc.decline...)
-			if want, got := tc.want, p.Confirm(); want != got {
+			p := prompt.New(tc.r)
+			if want, got := tc.want, p.Confirm(tc.inputs); want != got {
 				t.Errorf("want %t, got %t", want, got)
 			}
 		})
@@ -124,112 +112,93 @@ func TestPromptConfirm(t *testing.T) {
 
 func TestPromptConfirmStatus(t *testing.T) {
 	testCases := []struct {
-		r       io.Reader
-		accept  []string
-		decline []string
-
-		want prompt.Status
+		r      io.Reader
+		inputs map[string]bool
+		want   prompt.Status
 	}{
 		// default "y"
 		{
-			r:       strings.NewReader("y\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    prompt.StatusAccept,
+			r:      strings.NewReader("y\n"),
+			inputs: testInputs,
+			want:   prompt.StatusAccept,
 		},
 		// default "n"
 		{
-			r:       strings.NewReader("n\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    prompt.StatusDecline,
+			r:      strings.NewReader("n\n"),
+			inputs: testInputs,
+			want:   prompt.StatusDecline,
 		},
 		// capital "y"
 		{
-			r:       strings.NewReader("Y\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    prompt.StatusAccept,
+			r:      strings.NewReader("Y\n"),
+			inputs: testInputs,
+			want:   prompt.StatusAccept,
 		},
 		// capital "n"
 		{
-			r:       strings.NewReader("N\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    prompt.StatusDecline,
+			r:      strings.NewReader("N\n"),
+			inputs: testInputs,
+			want:   prompt.StatusDecline,
 		},
 		// default "yes"
 		{
-			r:       strings.NewReader("yes\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    prompt.StatusAccept,
+			r:      strings.NewReader("yes\n"),
+			inputs: testInputs,
+			want:   prompt.StatusAccept,
 		},
 		// default "no"
 		{
-			r:       strings.NewReader("no\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    prompt.StatusDecline,
+			r:      strings.NewReader("no\n"),
+			inputs: testInputs,
+			want:   prompt.StatusDecline,
 		},
 		// capital "yes"
 		{
-			r:       strings.NewReader("YES\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    prompt.StatusAccept,
+			r:      strings.NewReader("YES\n"),
+			inputs: testInputs,
+			want:   prompt.StatusAccept,
 		},
 		// capital "no"
 		{
-			r:       strings.NewReader("NO\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    prompt.StatusDecline,
+			r:      strings.NewReader("NO\n"),
+			inputs: testInputs,
+			want:   prompt.StatusDecline,
 		},
 		// default whitespaced "yes"
 		{
-			r:       strings.NewReader("  yes  \n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    prompt.StatusAccept,
+			r:      strings.NewReader("  yes  \n"),
+			inputs: testInputs,
+			want:   prompt.StatusAccept,
 		},
 		// default whitespaced "no"
 		{
-			r:       strings.NewReader("  no  \n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    prompt.StatusDecline,
+			r:      strings.NewReader("  no  \n"),
+			inputs: testInputs,
+			want:   prompt.StatusDecline,
 		},
 		// capital whitespaced "yes"
 		{
-			r:       strings.NewReader("  YES  \n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    prompt.StatusAccept,
+			r:      strings.NewReader("  YES  \n"),
+			inputs: testInputs,
+			want:   prompt.StatusAccept,
 		},
 		// capital whitespaced "no"
 		{
-			r:       strings.NewReader("  NO  \n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    prompt.StatusDecline,
+			r:      strings.NewReader("  NO  \n"),
+			inputs: testInputs,
+			want:   prompt.StatusDecline,
 		},
 		// none
 		{
-			r:       strings.NewReader("foo\n"),
-			accept:  []string{"y", "yes"},
-			decline: []string{"n", "no"},
-			want:    prompt.StatusNone,
+			r:      strings.NewReader("foo\n"),
+			inputs: testInputs,
+			want:   prompt.StatusNone,
 		},
 	}
-	var stdin strings.Builder
 	for _, tc := range testCases {
 		t.Run("", func(t *testing.T) {
-			stdin.Reset()
-			p := prompt.New(tc.r, &stdin)
-			p.SetAccept(tc.accept...)
-			p.SetDecline(tc.decline...)
-			if want, got := tc.want, p.ConfirmStatus(); want != got {
+			p := prompt.New(tc.r)
+			if want, got := tc.want, p.ConfirmStatus(tc.inputs); want != got {
 				t.Errorf("want %d, got %d", want, got)
 			}
 		})
