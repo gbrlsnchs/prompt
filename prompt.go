@@ -20,11 +20,13 @@ func New(r io.Reader) *Prompt {
 }
 
 // Confirm prompts a message and check whether the input is acceptable.
+// The input is transformed using the Transform function.
 func (p *Prompt) Confirm(inputs map[string]bool) bool {
 	return p.ConfirmStatus(inputs) == StatusAccept
 }
 
 // ConfirmStatus prompts a message and returns a status depending on input.
+// The input is transformed using the Transform function.
 func (p *Prompt) ConfirmStatus(inputs map[string]bool) Status {
 	p.sc.Scan()
 	in := Transform(p.sc.Text())
