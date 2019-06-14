@@ -29,14 +29,13 @@ func (p *Prompt) Confirm(inputs map[string]bool) bool {
 // The input is transformed using the Transform function.
 func (p *Prompt) ConfirmStatus(inputs map[string]bool) Status {
 	in := p.Response()
-	confirm, ok := inputs[Transform(in)]
-	if !ok {
-		return StatusNone
+	if confirm, ok := inputs[Transform(in)]; ok {
+		if confirm {
+			return StatusAccept
+		}
+		return StatusDecline
 	}
-	if confirm {
-		return StatusAccept
-	}
-	return StatusDecline
+	return StatusNone
 }
 
 // Response scans an input and returns it as it is.
