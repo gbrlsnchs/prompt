@@ -4,7 +4,6 @@ workflows:
   version: 2
   test:
     jobs:
-      - go1.8
       - go1.9
       - go1.10
       - go1.11
@@ -34,8 +33,3 @@ jobs:
     <<: *nomod_template
     docker:
       - image: circleci/golang:1.9
-
-  go1.8:
-    <<: *nomod_template
-    docker:
-      - image: circleci/golang:1.8
