@@ -6,7 +6,6 @@ executors:
       version:
         description: Go version
         type: string
-        default: latest
     docker:
       - image: circleci/golang:<< parameters.version >>
 
@@ -21,8 +20,8 @@ workflows:
 jobs:
   go1_12: &template
     executor:
-      - golang:
-          version: 1.12
+      name: golang
+      version: "1.12"
     steps:
       - checkout
       - run: make
@@ -31,18 +30,18 @@ jobs:
   go1_11:
     <<: *template
     executor:
-      - golang:
-          version: 1.11
+      name: golang
+      version: "1.11"
 
   go1_10: &nomod_template
     <<: *template
     executor:
-      - golang:
-          version: 1.10
+      name: golang
+      version: "1.10"
     working_directory: /go/src/gsr.dev/prompt
 
   go1_9:
     <<: *nomod_template
     executor:
-      - golang:
-          version: 1.9
+      name: golang
+      version: "1.9"
