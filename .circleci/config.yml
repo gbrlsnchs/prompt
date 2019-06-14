@@ -20,7 +20,7 @@ workflows:
 
 jobs:
   go1_12: &template
-    executors:
+    executor:
       - golang:
           version: 1.12
     steps:
@@ -30,19 +30,19 @@ jobs:
 
   go1_11:
     <<: *template
-    executors:
+    executor:
       - golang:
           version: 1.11
 
   go1_10: &nomod_template
     <<: *template
-    executors:
+    executor:
       - golang:
           version: 1.10
     working_directory: /go/src/gsr.dev/prompt
 
   go1_9:
     <<: *nomod_template
-    executors:
+    executor:
       - golang:
           version: 1.9
