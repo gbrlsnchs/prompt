@@ -1,4 +1,4 @@
-package prompt
+package prompt // import "gsr.dev/prompt"
 
 import (
 	"bufio"

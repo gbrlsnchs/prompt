@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gbrlsnchs/prompt"
+	"gsr.dev/prompt"
 )
 
 var testInputs = map[string]bool{

@@ -3,7 +3,7 @@ package prompt_test
 import (
 	"testing"
 
-	"github.com/gbrlsnchs/prompt"
+	"gsr.dev/prompt"
 )
 
 func TestTransform(t *testing.T) {

@@ -1,3 +1,3 @@
-module github.com/gbrlsnchs/prompt
+module gsr.dev/prompt
 
 go 1.12
