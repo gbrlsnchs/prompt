@@ -1,7 +1,16 @@
-version: 2
+version: 2.1
+
+executors:
+  golang:
+    parameters:
+      version:
+        description: Go version
+        type: string
+        default: latest
+    docker:
+      - image: circleci/golang:<< parameters.version >>
 
 workflows:
-  version: 2
   test:
     jobs:
       - go1.9
@@ -11,8 +20,9 @@ workflows:
 
 jobs:
   go1.12: &template
-    docker:
-      - image: circleci/golang:1.12
+    executors:
+      - golang:
+          version: 1.12
     steps:
       - checkout
       - run: make
@@ -20,16 +30,19 @@ jobs:
 
   go1.11:
     <<: *template
-    docker:
-      - image: circleci/golang:1.11
+    executors:
+      - golang:
+          version: 1.11
 
   go1.10: &nomod_template
     <<: *template
-    docker:
-      - image: circleci/golang:1.10
+    executors:
+      - golang:
+          version: 1.10
     working_directory: /go/src/gsr.dev/prompt
 
   go1.9:
     <<: *nomod_template
-    docker:
-      - image: circleci/golang:1.9
+    executors:
+      - golang:
+          version: 1.9
