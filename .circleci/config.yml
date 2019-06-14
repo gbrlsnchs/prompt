@@ -14,10 +14,8 @@ jobs:
       - image: circleci/golang:1.12
     steps:
       - checkout
-      - run:
-          command: |
-            make
-            make test
+      - run: make
+      - run: make test
   go1.11:
     <<: *template
     docker:
