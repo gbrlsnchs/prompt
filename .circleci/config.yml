@@ -13,13 +13,13 @@ executors:
 workflows:
   test:
     jobs:
-      - go1.9
-      - go1.10
-      - go1.11
-      - go1.12
+      - go1_9
+      - go1_10
+      - go1_11
+      - go1_12
 
 jobs:
-  go1.12: &template
+  go1_12: &template
     executors:
       - golang:
           version: 1.12
@@ -28,20 +28,20 @@ jobs:
       - run: make
       - run: make test
 
-  go1.11:
+  go1_11:
     <<: *template
     executors:
       - golang:
           version: 1.11
 
-  go1.10: &nomod_template
+  go1_10: &nomod_template
     <<: *template
     executors:
       - golang:
           version: 1.10
     working_directory: /go/src/gsr.dev/prompt
 
-  go1.9:
+  go1_9:
     <<: *nomod_template
     executors:
       - golang:
