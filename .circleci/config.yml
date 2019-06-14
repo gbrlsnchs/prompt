@@ -24,4 +24,4 @@ jobs:
     <<: *template
     docker:
       - image: circleci/golang:1.10
-    working_directory: /go/src/github.com/gbrlsnchs/prompt
+    working_directory: /go/src/gsr.dev/prompt
