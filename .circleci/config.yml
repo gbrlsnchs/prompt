@@ -3,6 +3,8 @@ workflows:
   version: 2
   test:
     jobs:
+      - go1.8
+      - go1.9
       - go1.10
       - go1.11
       - go1.12
@@ -20,8 +22,16 @@ jobs:
     <<: *template
     docker:
       - image: circleci/golang:1.11
-  go1.10:
+  go1.10: &nomod-template
     <<: *template
     docker:
       - image: circleci/golang:1.10
     working_directory: /go/src/gsr.dev/prompt
+  go1.9:
+    <<: *nomod-template
+    docker:
+        - image: circleci/golang:1.9
+  go1.8:
+    <<: *nomod-template
+    docker:
+        - image: circleci/golang:1.8
