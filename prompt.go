@@ -3,16 +3,23 @@ package prompt // import "gsr.dev/prompt"
 import (
 	"bufio"
 	"os"
+	"strings"
 )
 
 // Prompt is a text prompter.
 type Prompt struct {
 	sc *bufio.Scanner
+	// Options.
+	transform func(string) string
 }
 
 // New initializes a new prompt using r. If r is nil, os.Stdin is used.
 func New(opts ...Option) *Prompt {
-	var p Prompt
+	p := Prompt{
+		transform: func(s string) string {
+			return strings.TrimSpace(s)
+		},
+	}
 	for _, opt := range opts {
 		opt(&p)
 	}
