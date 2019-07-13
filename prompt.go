@@ -6,6 +6,22 @@ import (
 	"strings"
 )
 
+// Answer is an input answer.
+type Answer int
+
+const (
+	// True means input is truthy.
+	True Answer = iota
+	// False means input is falsy.
+	False
+	// None means input didn't match anything.
+	None
+)
+
+// Inputs is a dictionary that stores
+// whether an input should be accepted.
+type Inputs map[string]bool
+
 // Prompt is a text prompter.
 type Prompt struct {
 	sc *bufio.Scanner
@@ -29,27 +45,27 @@ func New(opts ...Option) *Prompt {
 	return &p
 }
 
-// Confirm prompts a message and check whether the input is acceptable.
-// The input is transformed using the Transform function.
-func (p *Prompt) Confirm(inputs map[string]bool) bool {
-	return p.ConfirmStatus(inputs) == StatusAccept
-}
-
-// ConfirmStatus prompts a message and returns a status depending on input.
-// The input is transformed using the Transform function.
-func (p *Prompt) ConfirmStatus(inputs map[string]bool) Status {
-	in := p.Response()
-	if confirm, ok := inputs[Transform(in)]; ok {
+// Answer prompts a message and returns an answer depending on input.
+// The input is trimmed by default.
+func (p *Prompt) Answer(in Inputs) Answer {
+	s := p.Text()
+	if confirm, ok := in[p.transform(s)]; ok {
 		if confirm {
-			return StatusAccept
+			return True
 		}
-		return StatusDecline
+		return False
 	}
-	return StatusNone
+	return Undefined
 }
 
-// Response scans an input and returns it as it is.
-func (p *Prompt) Response() string {
+// Confirm prompts a message and check whether the input is truthy.
+// The input is trimmed by default.
+func (p *Prompt) Confirm(in Inputs) bool {
+	return p.Answer(in) == True
+}
+
+// Text scans an input and returns it as is.
+func (p *Prompt) Text() string {
 	p.sc.Scan()
 	return p.sc.Text()
 }
