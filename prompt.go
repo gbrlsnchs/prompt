@@ -55,7 +55,7 @@ func (p *Prompt) Answer(in Inputs) Answer {
 		}
 		return False
 	}
-	return Undefined
+	return None
 }
 
 // Confirm prompts a message and check whether the input is truthy.

@@ -28,12 +28,12 @@ func TestOptions(t *testing.T) {
 			{
 				name: "Y",
 				in:   testIn,
-				want: prompt.Undefined,
+				want: prompt.None,
 			},
 			{
 				name: "N",
 				in:   testIn,
-				want: prompt.Undefined,
+				want: prompt.None,
 			},
 			{
 				name: "yes",
@@ -48,12 +48,12 @@ func TestOptions(t *testing.T) {
 			{
 				name: "YES",
 				in:   testIn,
-				want: prompt.Undefined,
+				want: prompt.None,
 			},
 			{
 				name: "NO",
 				in:   testIn,
-				want: prompt.Undefined,
+				want: prompt.None,
 			},
 			{
 				name: "__yes__",
@@ -68,17 +68,17 @@ func TestOptions(t *testing.T) {
 			{
 				name: "__YES__",
 				in:   testIn,
-				want: prompt.Undefined,
+				want: prompt.None,
 			},
 			{
 				name: "__NO__",
 				in:   testIn,
-				want: prompt.Undefined,
+				want: prompt.None,
 			},
 			{
 				name: "foo",
 				in:   testIn,
-				want: prompt.Undefined,
+				want: prompt.None,
 			},
 		}
 		for _, tc := range testCases {
