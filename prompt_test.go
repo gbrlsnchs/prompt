@@ -1,224 +1,265 @@
 package prompt_test
 
 import (
-	"io"
-	"strings"
+	"fmt"
+	"os"
 	"testing"
 
 	"gsr.dev/prompt"
 )
 
-var testInputs = map[string]bool{
+var testIn = prompt.Inputs{
 	"y":   true,
 	"yes": true,
 	"n":   false,
 	"no":  false,
 }
 
-func TestPromptConfirm(t *testing.T) {
-	testCases := []struct {
-		r      io.Reader
-		inputs map[string]bool
-		want   bool
-	}{
-		// default "y"
-		{
-			r:      strings.NewReader("y\n"),
-			inputs: testInputs,
-			want:   true,
-		},
-		// default "n"
-		{
-			r:      strings.NewReader("n\n"),
-			inputs: testInputs,
-			want:   false,
-		},
-		// capital "y"
-		{
-			r:      strings.NewReader("Y\n"),
-			inputs: testInputs,
-			want:   true,
-		},
-		// capital "n"
-		{
-			r:      strings.NewReader("N\n"),
-			inputs: testInputs,
-			want:   false,
-		},
-		// default "yes"
-		{
-			r:      strings.NewReader("yes\n"),
-			inputs: testInputs,
-			want:   true,
-		},
-		// default "no"
-		{
-			r:      strings.NewReader("no\n"),
-			inputs: testInputs,
-			want:   false,
-		},
-		// capital "yes"
-		{
-			r:      strings.NewReader("YES\n"),
-			inputs: testInputs,
-			want:   true,
-		},
-		// capital "no"
-		{
-			r:      strings.NewReader("NO\n"),
-			inputs: testInputs,
-			want:   false,
-		},
-		// default whitespaced "yes"
-		{
-			r:      strings.NewReader("  yes  \n"),
-			inputs: testInputs,
-			want:   true,
-		},
-		// default whitespaced "no"
-		{
-			r:      strings.NewReader("  no  \n"),
-			inputs: testInputs,
-			want:   false,
-		},
-		// capital whitespaced "yes"
-		{
-			r:      strings.NewReader("  YES  \n"),
-			inputs: testInputs,
-			want:   true,
-		},
-		// capital whitespaced "no"
-		{
-			r:      strings.NewReader("  NO  \n"),
-			inputs: testInputs,
-			want:   false,
-		},
-		// none
-		{
-			r:      strings.NewReader("foo\n"),
-			inputs: testInputs,
-			want:   false,
-		},
-	}
-	for _, tc := range testCases {
-		t.Run("", func(t *testing.T) {
-			p := prompt.New(prompt.Stdin(tc.r))
-			if want, got := tc.want, p.Confirm(tc.inputs); want != got {
-				t.Errorf("want %t, got %t", want, got)
-			}
-		})
-	}
-}
+func TestPrompt(t *testing.T) {
+	t.Run("ConfirmStatus", func(t *testing.T) {
+		testCases := []struct {
+			name string
+			in   prompt.Inputs
+			want prompt.Answer
+		}{
+			{
+				name: "y",
+				in:   testIn,
+				want: prompt.True,
+			},
+			{
+				name: "n",
+				in:   testIn,
+				want: prompt.False,
+			},
+			{
+				name: "Y",
+				in:   testIn,
+				want: prompt.Undefined,
+			},
+			{
+				name: "N",
+				in:   testIn,
+				want: prompt.Undefined,
+			},
+			{
+				name: "yes",
+				in:   testIn,
+				want: prompt.True,
+			},
+			{
+				name: "no",
+				in:   testIn,
+				want: prompt.False,
+			},
+			{
+				name: "YES",
+				in:   testIn,
+				want: prompt.Undefined,
+			},
+			{
+				name: "NO",
+				in:   testIn,
+				want: prompt.Undefined,
+			},
+			{
+				name: "__yes__",
+				in:   testIn,
+				want: prompt.True,
+			},
+			{
+				name: "__no__",
+				in:   testIn,
+				want: prompt.False,
+			},
+			{
+				name: "__YES__",
+				in:   testIn,
+				want: prompt.Undefined,
+			},
+			{
+				name: "__NO__",
+				in:   testIn,
+				want: prompt.Undefined,
+			},
+			{
+				name: "foo",
+				in:   testIn,
+				want: prompt.Undefined,
+			},
+		}
+		for _, tc := range testCases {
+			t.Run("", func(t *testing.T) {
+				f, err := os.Open(fmt.Sprintf("testdata/inputs/%s.txt", tc.name))
+				if err != nil {
+					t.Fatal(err)
+				}
+				os.Stdin = f
+				p := prompt.New()
+				if want, got := tc.want, p.Answer(tc.in); want != got {
+					t.Errorf("want %d, got %d", want, got)
+				}
+			})
+		}
+	})
 
-func TestPromptConfirmStatus(t *testing.T) {
-	testCases := []struct {
-		r      io.Reader
-		inputs map[string]bool
-		want   prompt.Status
-	}{
-		// default "y"
-		{
-			r:      strings.NewReader("y\n"),
-			inputs: testInputs,
-			want:   prompt.StatusAccept,
-		},
-		// default "n"
-		{
-			r:      strings.NewReader("n\n"),
-			inputs: testInputs,
-			want:   prompt.StatusDecline,
-		},
-		// capital "y"
-		{
-			r:      strings.NewReader("Y\n"),
-			inputs: testInputs,
-			want:   prompt.StatusAccept,
-		},
-		// capital "n"
-		{
-			r:      strings.NewReader("N\n"),
-			inputs: testInputs,
-			want:   prompt.StatusDecline,
-		},
-		// default "yes"
-		{
-			r:      strings.NewReader("yes\n"),
-			inputs: testInputs,
-			want:   prompt.StatusAccept,
-		},
-		// default "no"
-		{
-			r:      strings.NewReader("no\n"),
-			inputs: testInputs,
-			want:   prompt.StatusDecline,
-		},
-		// capital "yes"
-		{
-			r:      strings.NewReader("YES\n"),
-			inputs: testInputs,
-			want:   prompt.StatusAccept,
-		},
-		// capital "no"
-		{
-			r:      strings.NewReader("NO\n"),
-			inputs: testInputs,
-			want:   prompt.StatusDecline,
-		},
-		// default whitespaced "yes"
-		{
-			r:      strings.NewReader("  yes  \n"),
-			inputs: testInputs,
-			want:   prompt.StatusAccept,
-		},
-		// default whitespaced "no"
-		{
-			r:      strings.NewReader("  no  \n"),
-			inputs: testInputs,
-			want:   prompt.StatusDecline,
-		},
-		// capital whitespaced "yes"
-		{
-			r:      strings.NewReader("  YES  \n"),
-			inputs: testInputs,
-			want:   prompt.StatusAccept,
-		},
-		// capital whitespaced "no"
-		{
-			r:      strings.NewReader("  NO  \n"),
-			inputs: testInputs,
-			want:   prompt.StatusDecline,
-		},
-		// none
-		{
-			r:      strings.NewReader("foo\n"),
-			inputs: testInputs,
-			want:   prompt.StatusNone,
-		},
-	}
-	for _, tc := range testCases {
-		t.Run("", func(t *testing.T) {
-			p := prompt.New(prompt.Stdin(tc.r))
-			if want, got := tc.want, p.ConfirmStatus(tc.inputs); want != got {
-				t.Errorf("want %d, got %d", want, got)
+	t.Run("Confirm", func(t *testing.T) {
+		testCases := []struct {
+			name string
+			in   prompt.Inputs
+			want bool
+		}{
+			{
+				name: "y",
+				in:   testIn,
+				want: true,
+			},
+			{
+				name: "n",
+				in:   testIn,
+				want: false,
+			},
+			{
+				name: "Y",
+				in:   testIn,
+				want: false,
+			},
+			{
+				name: "N",
+				in:   testIn,
+				want: false,
+			},
+			{
+				name: "yes",
+				in:   testIn,
+				want: true,
+			},
+			{
+				name: "no",
+				in:   testIn,
+				want: false,
+			},
+			{
+				name: "YES",
+				in:   testIn,
+				want: false,
+			},
+			{
+				name: "NO",
+				in:   testIn,
+				want: false,
+			},
+			{
+				name: "__yes__",
+				in:   testIn,
+				want: true,
+			},
+			{
+				name: "__no__",
+				in:   testIn,
+				want: false,
+			},
+			{
+				name: "__YES__",
+				in:   testIn,
+				want: false,
+			},
+			{
+				name: "__NO__",
+				in:   testIn,
+				want: false,
+			},
+			{
+				name: "foo",
+				in:   testIn,
+				want: false,
+			},
+		}
+		for _, tc := range testCases {
+			f, err := os.Open(fmt.Sprintf("testdata/inputs/%s.txt", tc.name))
+			if err != nil {
+				t.Fatal(err)
 			}
-		})
-	}
-}
+			os.Stdin = f
+			t.Run(tc.name, func(t *testing.T) {
+				p := prompt.New()
+				if want, got := tc.want, p.Confirm(tc.in); want != got {
+					t.Errorf("want %t, got %t", want, got)
+				}
+			})
+		}
+	})
 
-func TestPromptResponse(t *testing.T) {
-	testCases := []struct {
-		r    io.Reader
-		want string
-	}{
-		{strings.NewReader("test\n"), "test"},
-		{strings.NewReader("FooBar\n"), "FooBar"},
-	}
-	for _, tc := range testCases {
-		t.Run(tc.want, func(t *testing.T) {
-			p := prompt.New(prompt.Stdin(tc.r))
-			if want, got := tc.want, p.Response(); want != got {
-				t.Errorf("want %q, got %q", want, got)
-			}
-		})
-	}
+	t.Run("Text", func(t *testing.T) {
+		testCases := []struct {
+			name string
+			want string
+		}{
+			{
+				name: "y",
+				want: "y",
+			},
+			{
+				name: "n",
+				want: "n",
+			},
+			{
+				name: "Y",
+				want: "Y",
+			},
+			{
+				name: "N",
+				want: "N",
+			},
+			{
+				name: "yes",
+				want: "yes",
+			},
+			{
+				name: "no",
+				want: "no",
+			},
+			{
+				name: "YES",
+				want: "YES",
+			},
+			{
+				name: "NO",
+				want: "NO",
+			},
+			{
+				name: "__yes__",
+				want: "  yes  ",
+			},
+			{
+				name: "__no__",
+				want: "  no  ",
+			},
+			{
+				name: "__YES__",
+				want: "  YES  ",
+			},
+			{
+				name: "__NO__",
+				want: "  NO  ",
+			},
+			{
+				name: "foo",
+				want: "foo",
+			},
+		}
+		for _, tc := range testCases {
+			t.Run(tc.want, func(t *testing.T) {
+				f, err := os.Open(fmt.Sprintf("testdata/inputs/%s.txt", tc.name))
+				if err != nil {
+					t.Fatal(err)
+				}
+				os.Stdin = f
+				p := prompt.New()
+				if want, got := tc.want, p.Text(); want != got {
+					t.Errorf("want %q, got %q", want, got)
+				}
+			})
+		}
+	})
 }
