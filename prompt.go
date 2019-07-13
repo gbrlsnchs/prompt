@@ -2,7 +2,6 @@ package prompt // import "gsr.dev/prompt"
 
 import (
 	"bufio"
-	"io"
 	"os"
 )
 
@@ -12,15 +11,14 @@ type Prompt struct {
 }
 
 // New initializes a new prompt using r. If r is nil, os.Stdin is used.
-func New(r io.Reader, opts ...Option) *Prompt {
+func New(opts ...Option) *Prompt {
 	var p Prompt
 	for _, opt := range opts {
 		opt(&p)
 	}
-	if r == nil {
-		r = os.Stdin
+	if p.sc == nil {
+		p.sc = bufio.NewScanner(os.Stdin)
 	}
-	p.sc = bufio.NewScanner(r)
 	return &p
 }
 

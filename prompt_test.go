@@ -102,7 +102,7 @@ func TestPromptConfirm(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run("", func(t *testing.T) {
-			p := prompt.New(tc.r)
+			p := prompt.New(prompt.Stdin(tc.r))
 			if want, got := tc.want, p.Confirm(tc.inputs); want != got {
 				t.Errorf("want %t, got %t", want, got)
 			}
@@ -197,7 +197,7 @@ func TestPromptConfirmStatus(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run("", func(t *testing.T) {
-			p := prompt.New(tc.r)
+			p := prompt.New(prompt.Stdin(tc.r))
 			if want, got := tc.want, p.ConfirmStatus(tc.inputs); want != got {
 				t.Errorf("want %d, got %d", want, got)
 			}
@@ -215,7 +215,7 @@ func TestPromptResponse(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.want, func(t *testing.T) {
-			p := prompt.New(tc.r)
+			p := prompt.New(prompt.Stdin(tc.r))
 			if want, got := tc.want, p.Response(); want != got {
 				t.Errorf("want %q, got %q", want, got)
 			}
