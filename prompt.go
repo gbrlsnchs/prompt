@@ -12,11 +12,16 @@ type Prompt struct {
 }
 
 // New initializes a new prompt using r. If r is nil, os.Stdin is used.
-func New(r io.Reader) *Prompt {
+func New(r io.Reader, opts ...Option) *Prompt {
+	var p Prompt
+	for _, opt := range opts {
+		opt(&p)
+	}
 	if r == nil {
 		r = os.Stdin
 	}
-	return &Prompt{sc: bufio.NewScanner(r)}
+	p.sc = bufio.NewScanner(r)
+	return &p
 }
 
 // Confirm prompts a message and check whether the input is acceptable.
